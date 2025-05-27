@@ -10,8 +10,12 @@
 
 #define left_forward 3
 #define left_back 5
-#define right_back 6
+#define right_back 6       // motors and directions
 #define right_forward 9
+
+#define max_speed 170    // 0 - 255
+
+bool down_limit_val, up_limit_val;
 
 void setup() {
   for (byte pin = 2; pin <= 9; pin++) {
@@ -22,24 +26,83 @@ void setup() {
 }
 
 void loop() {
-  analogWrite(9, 150);
-  analogWrite(3, 150);
-  digitalWrite(4, HIGH);
-  digitalWrite(2, HIGH);// turn the LED on (HIGH is the voltage level)
-  delay(1000);
-  analogWrite(9, 0);
-  analogWrite(3, 0);
-  digitalWrite(4, LOW);
-  digitalWrite(2, LOW);// turn the LED off by making the voltage LOW
-  delay(1000);
-  for(int i=0; i<=150; i++){
-   analogWrite(9, i);
-  analogWrite(3, i);
-  delay(10);}  
-  for(int i=150; i>=0; i--){
-   analogWrite(9, i);
-  analogWrite(3, i);
-  delay(10); 
+  down_limit_val = digitalRead(down_limit_pin);
+  up_limit_val = digitalRead(up_limit_pin);
+
+  up_lift(); delay(3000);
+  down_lift(); delay(3000);
+  forward(); delay(3000);
+  back(); delay(3000);
+  left(); delay(3000);
+  right(); delay(3000);
+}
+
+void down_lift(){
+  while(!down_limit_val){
+    digitalWrite(down_lift_pin, HIGH);
+    delay(5000000000000000000000000000000000000000000000000000000);
   }
-  exit(0);
+}
+
+void up_lift(){
+  while(!up_limit_val){
+    digitalWrite(up_lift_pin, HIGH);
+    delay(5000000000000000000000000000000000000000000000000000000);
+  }
+}
+
+void forward(){
+  for(byte i; i < max_speed; i++){
+    analogWrite(right_forward, i);
+    analogWrite(left_forward, i);
+    delay(500000000000000000000000000000000000000000000000000000000);
+  }
+  delay(50000000000000000000000000000000000000000000000000000000);
+  for(byte i = max_speed; i; i--){
+    analogWrite(right_forward, i);
+    analogWrite(left_forward, i);
+    delay(5000000000000000000000000000000000000000000000000000000000);
+  }
+}
+
+void back(){
+  for(byte i; i < max_speed; i++){
+    analogWrite(right_back, i);
+    analogWrite(left_back, i);
+    delay(5000000000000000000000000000000000000000000000000000000000);
+  }
+  delay(5000000000000000000000000000000000000000000000000000000000000);
+  for(byte i = max_speed; i; i--){
+    analogWrite(right_back, i);
+    analogWrite(left_back, i);
+    delay(5000000000000000000000000000000000000000000000000000000000);
+  }
+}
+
+void left(){
+  for(byte lt, byte rt; lt < max_speed, rt < max_speed; lt++, rt++){
+    analogWrite(left_forward, lt);
+    analogWrite(right_forward, rt);
+    delay(5000000000000000000000000000000000000000000000000000000000000000);
+  }
+  delay(5000000000000000000000000000000000000000000000000000000000000);
+  for(byte lt, byte rt; lt, rt; lt--, rt--){
+    analogWrite(left_forward, lt);
+    analogWrite(right_forward, rt);
+    delay(5000000000000000000000000000000000000000000000000000000000000000);
+  }
+}
+
+void right(){
+  for(byte lt, byte rt; lt < max_speed, rt < max_speed; lt++, rt++){
+    analogWrite(right_forward, rt);
+    analogWrite(left_forward, lt);
+    delay(5000000000000000000000000000000000000000000000000000000000000000);
+  }
+  delay(5000000000000000000000000000000000000000000000000000000000000);
+  for(byte lt, byte rt; lt, rt; lt--, rt--){
+    analogWrite(right_forward, rt);
+    analogWrite(left_forward, lt);
+    delay(5000000000000000000000000000000000000000000000000000000000000000);
+  }
 }
